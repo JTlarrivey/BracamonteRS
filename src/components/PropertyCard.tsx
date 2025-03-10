@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Bed, Bath, Square } from "lucide-react";
 import { Property } from "../types";
@@ -18,7 +17,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
 
   return (
     <div
-      className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105 cursor-pointer"
+      className="bg-white rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer animate-fade-in"
       onClick={() => navigate(`/property/${property.id}`)}
     >
       <div className="relative h-48">

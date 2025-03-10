@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { Instagram, MessageCircle } from "lucide-react";
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { PropertyList } from "./components/PropertyList";
 import { PropertyDetails } from "./components/PropertyDetails";
 import { SearchBar } from "./components/SearchBar";
@@ -193,7 +192,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-[#1E2841] flex flex-col">
-        <header className="bg-[#1E2841] shadow-md">
+        <header className="bg-[#1E2841] shadow-md animate-fade-in">
           <div className="container mx-auto px-4 py-6">
             <div className="flex items-center justify-center gap-2">
               <img
@@ -208,7 +207,7 @@ function App() {
           </div>
         </header>
 
-        <div className="flex-grow">
+        <div className="flex-grow animate-fade-in">
           <Routes>
             <Route
               path="/"
