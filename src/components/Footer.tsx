@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Instagram, MessageCircle } from "lucide-react";
 
@@ -16,7 +15,7 @@ export function Footer() {
             </Link>
 
             <a
-              href="https://instagram.com/bracamontepropiedades"
+              href="https://www.instagram.com/bracamontepropiedadeslp/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-gray-300 transition-colors flex items-center gap-2"
@@ -26,7 +25,7 @@ export function Footer() {
             </a>
 
             <a
-              href="https://wa.me/5491112345678"
+              href="https://wa.me/5492215908506"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-gray-300 transition-colors flex items-center gap-2"
