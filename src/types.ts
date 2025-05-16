@@ -1,22 +1,17 @@
 export type PropertyType =
-  | "departamento"
-  | "monoambiente"
-  | "duplex"
+  | "Departamento"
+  | "Monoambiente"
+  | "Duplex"
   | "PH"
   | "Casa"
-  | "Propiedad Rural";
-export type Location =
-  | "City Bell"
-  | "La Plata"
-  | "Gonnet"
-  | "Ringuelet"
-  | "Villa Elisa"
-  | "El Rincón";
+  | "Local"
+  | "Terreno"
+  | "Rural";
 
 export interface Property {
   id: string;
   type: PropertyType;
-  location: Location;
+  location: string;
   address: string;
   price: number;
   description: string;

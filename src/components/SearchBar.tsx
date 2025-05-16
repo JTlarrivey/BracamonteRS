@@ -1,33 +1,31 @@
-import React from "react";
-import { Location, PropertyType } from "../types";
-import { Search } from "lucide-react";
+import { PropertyType } from "../types";
 
 interface SearchBarProps {
-  onLocationChange: (location: Location | "") => void;
+  onLocationChange: (city: string) => void;
   onTypeChange: (type: PropertyType | "") => void;
-  onPriceRangeChange: (range: { min: number; max: number }) => void;
 }
 
-export function SearchBar({
-  onLocationChange,
-  onTypeChange,
-  onPriceRangeChange,
-}: SearchBarProps) {
-  const locations: Location[] = [
-    "City Bell",
+export function SearchBar({ onLocationChange, onTypeChange }: SearchBarProps) {
+  const cities = [
     "La Plata",
+    "City Bell",
     "Gonnet",
-    "Ringuelet",
     "Villa Elisa",
-    "El Rincón",
+    "Ringuelet",
+    "Los Hornos",
+    "Tolosa",
+    "Berisso",
+    "Ensenada",
   ];
   const propertyTypes: PropertyType[] = [
-    "departamento",
-    "monoambiente",
-    "duplex",
+    "Departamento",
+    "Monoambiente",
+    "Duplex",
     "PH",
     "Casa",
-    "Propiedad Rural",
+    "Local",
+    "Rural",
+    "Terreno",
   ];
 
   return (
@@ -38,13 +36,13 @@ export function SearchBar({
             Ubicación
           </label>
           <select
-            onChange={(e) => onLocationChange(e.target.value as Location | "")}
+            onChange={(e) => onLocationChange(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-md text-gray-700"
           >
             <option value="">Todas las ubicaciones</option>
-            {locations.map((location) => (
-              <option key={location} value={location}>
-                {location}
+            {cities.map((city) => (
+              <option key={city} value={city}>
+                {city}
               </option>
             ))}
           </select>
@@ -65,33 +63,6 @@ export function SearchBar({
               </option>
             ))}
           </select>
-        </div>
-
-        <div className="flex-1">
-          <label className="block text-gray-700 text-sm font-medium mb-2">
-            Rango de Precio
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              placeholder="Min"
-              onChange={(e) =>
-                onPriceRangeChange({
-                  min: Number(e.target.value),
-                  max: 1000000,
-                })
-              }
-              className="w-full p-2 border border-gray-300 rounded-md text-gray-700"
-            />
-            <input
-              type="number"
-              placeholder="Max"
-              onChange={(e) =>
-                onPriceRangeChange({ min: 0, max: Number(e.target.value) })
-              }
-              className="w-full p-2 border border-gray-300 rounded-md text-gray-700"
-            />
-          </div>
         </div>
       </div>
     </div>

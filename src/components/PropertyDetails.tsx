@@ -1,40 +1,61 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  Home,
-  Bed,
-  Bath,
-  Square,
-  Check,
-  AlertCircle,
-} from "lucide-react";
-import { Property } from "../types";
+import { ArrowLeft, Home, Bed, Bath, Square, Check } from "lucide-react";
 import { ImageCarousel } from "./ImageCarousel";
+import { supabase } from "../lib/supabase";
+import type { Database } from "../../src/types/supabase";
 
-interface PropertyDetailsProps {
-  properties: Property[];
-}
+type Property = Database["public"]["Tables"]["properties"]["Row"];
 
-export function PropertyDetails({ properties }: PropertyDetailsProps) {
+export function PropertyDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const property = properties.find((p) => p.id === id);
+  const [property, setProperty] = useState<Property | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProperty() {
+      if (!id) return;
+
+      try {
+        const { data: propertyData, error } = await supabase
+          .from("properties")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) throw error;
+        setProperty(propertyData);
+      } catch (error) {
+        console.error("Error fetching property:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProperty();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
 
   if (!property) {
-    return <div>Property not found</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-white">Property not found</div>
+      </div>
+    );
   }
 
   const formattedPrice = new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "USD",
-  }).format(property.price);
-
-  const formattedTaxes = (amount: number) =>
-    new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
+  }).format(Number(property.price));
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -48,20 +69,20 @@ export function PropertyDetails({ properties }: PropertyDetailsProps) {
 
       <div className="bg-white rounded-lg shadow-xl overflow-hidden">
         <div className="h-96">
-          <ImageCarousel images={property.images} />
+          <ImageCarousel images={property.images || []} />
         </div>
 
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {property.address}
+                {property.title}
               </h1>
               <div className="flex items-center gap-2 text-gray-600">
                 <Home className="w-5 h-5" />
                 <span>{property.location}</span>
                 <span className="px-2 py-1 bg-gray-100 rounded-md text-sm font-semibold">
-                  {property.type}
+                  {property.property_type}
                 </span>
               </div>
             </div>
@@ -81,7 +102,7 @@ export function PropertyDetails({ properties }: PropertyDetailsProps) {
             </div>
             <div className="flex items-center gap-2">
               <Square className="w-5 h-5 text-gray-600" />
-              <span>{property.squareMeters}m²</span>
+              <span>{property.square_meters}m²</span>
             </div>
           </div>
 
@@ -90,67 +111,19 @@ export function PropertyDetails({ properties }: PropertyDetailsProps) {
             <p className="text-gray-600">{property.description}</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          {property.amenities && property.amenities.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold mb-2">Características</h2>
+              <h2 className="text-xl font-semibold mb-2">Comodidades</h2>
               <ul className="grid grid-cols-2 gap-2">
-                {property.features.map((feature, index) => (
+                {property.amenities.map((amenity, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-green-500" />
-                    <span>{feature}</span>
+                    <span>{amenity}</span>
                   </li>
                 ))}
               </ul>
             </div>
-
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Servicios</h2>
-              <ul className="grid grid-cols-2 gap-2">
-                {property.services.map((service, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500" />
-                    <span>{service}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <h2 className="text-xl font-semibold mb-2">Impuestos y Deudas</h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <h3 className="font-semibold mb-1">Impuestos Mensuales</h3>
-                <ul>
-                  <li className="flex justify-between">
-                    <span>Municipal:</span>
-                    <span>{formattedTaxes(property.taxes.municipal)}</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>Provincial:</span>
-                    <span>{formattedTaxes(property.taxes.provincial)}</span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-1">Estado de Deudas</h3>
-                {property.hasDebts ? (
-                  <div className="flex items-center gap-2 text-red-500">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>
-                      Posee deudas por{" "}
-                      {formattedTaxes(property.debtAmount || 0)}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 text-green-500">
-                    <Check className="w-4 h-4" />
-                    <span>Sin deudas</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
