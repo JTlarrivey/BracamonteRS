@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -15,27 +15,29 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
   const [resolvedImages, setResolvedImages] = useState<string[]>([]);
 
   useEffect(() => {
-    // Evita acceso a localStorage durante el SSR
     if (typeof window === "undefined" || !images) return;
 
+    const SUPABASE_URL =
+      "https://zdvmvjifemgnmvqykbna.supabase.co/storage/v1/object/public/properties";
+
     const resolved = images.map((image) => {
+      // Caso A: Imagen guardada en localStorage
       if (image.startsWith("property_image_")) {
         const localValue = localStorage.getItem(image);
         return localValue || "";
       }
+
+      // Caso B: Imagen subida a Supabase (sin dominio)
+      if (!image.startsWith("http")) {
+        return `${SUPABASE_URL}/${image}`;
+      }
+
+      // Caso C: URL completa
       return image;
     });
 
     setResolvedImages(resolved.filter((img) => img !== ""));
   }, [images]);
-
-  if (!resolvedImages || resolvedImages.length === 0) {
-    return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
-        No hay imágenes disponibles
-      </div>
-    );
-  }
 
   return (
     <Swiper
