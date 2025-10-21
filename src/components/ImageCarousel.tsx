@@ -18,7 +18,7 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
     if (typeof window === "undefined" || !images) return;
 
     const SUPABASE_URL =
-      "https://zdvmvjifemgnmvqykbna.supabase.co/storage/v1/object/public/properties";
+      "https://zdvmvjifemgnmvqykbna.supabase.co/storage/v1/object/public/property_image_";
 
     const resolved = images.map((image) => {
       // Caso A: Imagen guardada en localStorage
