@@ -25,6 +25,14 @@ export function PropertyCard({ property }: PropertyCardProps) {
     return parts.join(", ") || "Ubicación no especificada";
   };
 
+  const SUPABASE_URL =
+    "https://zdvmvjifemgnmvqykbna.supabase.co/storage/v1/object/public/properties";
+
+  const getImageUrl = (image: string) => {
+    if (!image) return "";
+    return image.startsWith("http") ? image : `${SUPABASE_URL}/${image}`;
+  };
+
   return (
     <div
       onClick={() => navigate(`/property/${property.id}`)}
@@ -33,13 +41,18 @@ export function PropertyCard({ property }: PropertyCardProps) {
       <div className="relative h-48">
         {property.images && property.images.length > 0 ? (
           <img
-            src={property.images[0]}
+            src={getImageUrl(property.images[0])}
             alt={
               property.address
                 ? String(property.address)
                 : "Imagen de la propiedad"
             }
             className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src =
+                "https://via.placeholder.com/600x400?text=Imagen+no+disponible";
+            }}
           />
         ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center">

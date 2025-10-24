@@ -17,27 +17,24 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
   useEffect(() => {
     if (typeof window === "undefined" || !images) return;
 
-    const SUPABASE_URL =
-      "https://zdvmvjifemgnmvqykbna.supabase.co/storage/v1/object/public/property_image_";
+    // 🧩 URL base correcta del bucket "properties"
+    const SUPABASE_BASE_URL =
+      "https://zdvmvjifemgnmvqykbna.supabase.co/storage/v1/object/public/properties";
 
     const resolved = images.map((image) => {
-      // Caso A: Imagen guardada en localStorage
-      if (image.startsWith("property_image_")) {
-        const localValue = localStorage.getItem(image);
-        return localValue || "";
-      }
+      // Si ya es una URL completa, usarla tal cual
+      if (image.startsWith("http")) return image;
 
-      // Caso B: Imagen subida a Supabase (sin dominio)
-      if (!image.startsWith("http")) {
-        return `${SUPABASE_URL}/${image}`;
-      }
-
-      // Caso C: URL completa
-      return image;
+      // Si es un path relativo o nombre de archivo, agregar la URL base
+      return `${SUPABASE_BASE_URL}/${image}`;
     });
 
     setResolvedImages(resolved.filter((img) => img !== ""));
   }, [images]);
+
+  if (!resolvedImages || resolvedImages.length === 0) {
+    return null;
+  }
 
   return (
     <Swiper
@@ -54,6 +51,11 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
             alt={`Property image ${index + 1}`}
             className="w-full h-full object-cover"
             loading="lazy"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src =
+                "https://via.placeholder.com/800x600?text=Imagen+no+disponible";
+            }}
           />
         </SwiperSlide>
       ))}
